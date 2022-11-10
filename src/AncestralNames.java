@@ -2,7 +2,7 @@ import java.util.*;
 
 public class AncestralNames {
     public static void main(String[] args) {
-        List<String> names = List.of("B X", "A XLI", "Louis IX", "Louis VIII", "João III");
+        List<String> names = List.of("B X", "A XLV", "Louis IX", "Louis VIII", "John III");
         List<String> result = Result.sortRoman(names);
 
         System.out.println(result.stream().toList());
@@ -10,25 +10,26 @@ public class AncestralNames {
 
     static class Result {
         static List<String> sortRoman(List<String> names) {
-            List<Object[]> listOfNamesAndNUmbers = new ArrayList<>();
-            List<String> namesSortedByAlphabeticalOrderWhernEqualsByNumber = new ArrayList<>();
+            List<Object[]> listOfNamesAndNumbers = new ArrayList<>();
+            List<String> namesSortedByAlphabeticalOrderWhenEqualsByNumber = new ArrayList<>();
 
             names.forEach(s -> {
                 try {
                     String[] data = s.split(" ");
 
-                    listOfNamesAndNUmbers.add(new Object[]{s, romanToDecimal(data[1])});
+                    listOfNamesAndNumbers.add(new Object[]{s, romanToDecimal(data[1])});
 
                 } catch (Exception e) {
                     System.err.println("Invalid Roman number");
                 }
             });
 
-            listOfNamesAndNUmbers.sort((o1, o2) -> {
+            listOfNamesAndNumbers.sort((o1, o2) -> {
                 String ob1 = String.valueOf(o1[0]);
                 String ob2 = String.valueOf(o2[0]);
                 int iob1 = (Integer) o1[1];
                 int iob2 = (Integer) o2[1];
+
                 if (Objects.equals(ob1, ob2)) {
                     return Integer.compare(iob1, iob2);
                 } else {
@@ -36,11 +37,9 @@ public class AncestralNames {
                 }
             });
 
-            listOfNamesAndNUmbers.forEach(objects -> {
-                namesSortedByAlphabeticalOrderWhernEqualsByNumber.add(String.valueOf(objects[0]));
-            });
-            listOfNamesAndNUmbers.forEach(objects -> System.out.println(Arrays.stream(objects).toList()));
-            return namesSortedByAlphabeticalOrderWhernEqualsByNumber;
+            listOfNamesAndNumbers.forEach(objects -> namesSortedByAlphabeticalOrderWhenEqualsByNumber.add(String.valueOf(objects[0])));
+
+            return namesSortedByAlphabeticalOrderWhenEqualsByNumber;
         }
 
         private static Integer romanToDecimal(String romanNumberToConvert) throws Exception {
@@ -64,7 +63,7 @@ public class AncestralNames {
                 return romanToDecimalTable.get(romanNumberToConvert);
             }
 
-            String romanNumberLocalTemp = "";
+            String romanNumberLocalTemp;
             int multipleOfTenLimit = 0;
 
             String regex = "^(?=[MDCLXVI])M*(C[MD]|D?C{0,3})(X[CL]|L?X{0,3})(I[XV]|V?I{0,3})$";
@@ -78,11 +77,28 @@ public class AncestralNames {
                 }
             }
 
-            int unityPartOfNumberInDecimalFormat = Integer.parseInt(romanNumberToConvert.substring(0, multipleOfTenLimit));
-            int dozensPartOfNumberInDecimalFormat = Integer.parseInt(romanNumberToConvert.substring(multipleOfTenLimit));
+            int dozensPartOfNumberInDecimalFormat = getRomanOutDecimalDozens(romanToDecimalTable,
+                    romanNumberToConvert,
+                    multipleOfTenLimit);
 
-//            return romanToDecimalTable.get(romanNumberLocalTemp);
+            int unityPartOfNumberInDecimalFormat = getRomanOutDecimalUnity(romanToDecimalTable,
+                    romanNumberToConvert,
+                    multipleOfTenLimit);
+
+
             return dozensPartOfNumberInDecimalFormat + unityPartOfNumberInDecimalFormat;
+        }
+
+        private static int getRomanOutDecimalUnity(HashMap<String, Integer> romanToDecimalTable,
+                                                   String romanNumberToConvert,
+                                                   int multipleOfTenLimit) {
+            return romanToDecimalTable.get(romanNumberToConvert.substring(multipleOfTenLimit));
+        }
+
+        private static int getRomanOutDecimalDozens(HashMap<String, Integer> romanToDecimalTable,
+                                                    String roman,
+                                                    int multipleOfTenLimit) {
+            return romanToDecimalTable.get(roman.substring(0, multipleOfTenLimit));
         }
     }
 }
