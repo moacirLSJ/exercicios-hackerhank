@@ -27,6 +27,5 @@ class Test {
 
         }
         System.out.println(sumMin + " " + sumMax);
-        System.out.println("test");
     }
 }
